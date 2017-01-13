@@ -61,6 +61,31 @@ function frexp_exponent(value) {
   return exponent;
 }
 
+var MAGIC_NUMBER_FIXED_16_16 = 103079215104.0;
+function fixed_16_16_from_double(x) {
+  var data = new DataView(new ArrayBuffer(8));
+  data.setFloat64(0, x+MAGIC_NUMBER_FIXED_16_16);
+  return data.getInt32(4);
+}
+
+var FIXED_FRAC_BITS	= 8;
+
+var MAGIC_NUMBER_FIXED = 26388279066624.000000;
+
+function fixed_from_double(x) {
+  var data = new DataView(new ArrayBuffer(8));
+  data.setFloat64(0, x+MAGIC_NUMBER_FIXED);
+  return data.getInt32(4);
+}
+
+function fixed_integer_floor(x) {
+  if(x >= 0) {
+    return x >> FIXED_FRAC_BITS;
+  } else {
+    return -((-x - 1) >> FIXED_FRAC_BITS) - 1;
+  }
+}
+
 function ldexp(mantissa, exponent) {
   // construct a float as mantissa * 2 ^ exponent
   // avoid multiplying by Infinity and Zero and rounding errors
@@ -106,10 +131,10 @@ function fd_fwd(f)
 function fd_fixed(f)
 {
   return [
-    Math.round(256 * 2 * f[0]),
-    Math.round(256 * 16 * f[1]),
-    Math.round(256 * 16 * f[2]),
-    Math.round(256 * 16 * f[3])
+    fixed_16_16_from_double(256 * 2 * f[0]),
+    fixed_16_16_from_double(256 * 16 * f[1]),
+    fixed_16_16_from_double(256 * 16 * f[2]),
+    fixed_16_16_from_double(256 * 16 * f[3])
   ];
 }
 
@@ -207,7 +232,6 @@ function draw_pixel(imgdata, width, height, coord, color)
   var x = coord[0];
   var y = coord[1];
   if(x >= 0 && y >= 0 && x < width && y < height) {
-    console.log('['+x+','+y+'] ',color);
     setRawColorAt(imgdata, x, y, width, height,
       Math.round(color[0]), Math.round(color[1]), Math.round(color[2]), Math.round(color[3]));
   } else {
@@ -246,14 +270,15 @@ function rasterize_bezier_curve(imgdata, width, height,
   xu = fd_fixed(dxu);
   yu = fd_fixed(dyu);
 
-  x0 = Math.round(dxu[0]);
-  y0 = Math.round(dyu[0]);
+  x0 = fixed_from_double(dxu[0]);
+  y0 = fixed_from_double(dyu[0]);
   xu[0] = 0;
   yu[0] = 0;
 
   for(u=0; u<=usteps; ++u) {
-    var x = Math.floor(x0 + (xu[0] >> 15) + ((xu[0] >> 14) & 1));
-    var y = Math.floor(y0 + (yu[0] >> 15) + ((yu[0] >> 14) & 1));
+
+    var x = fixed_integer_floor(x0 + (xu[0] >> 15) + ((xu[0] >> 14) & 1));
+    var y = fixed_integer_floor(y0 + (yu[0] >> 15) + ((yu[0] >> 14) & 1));
 
     draw_pixel(imgdata, width, height, [x,y], [r,g,b,a]);
 
