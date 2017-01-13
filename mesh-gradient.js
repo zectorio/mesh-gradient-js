@@ -61,6 +61,10 @@ function frexp_exponent(value) {
   return exponent;
 }
 
+function double_to_short(d) {
+  return Math.round(d * 65535.0 + 0.5);
+}
+
 var MAGIC_NUMBER_FIXED_16_16 = 103079215104.0;
 function fixed_16_16_from_double(x) {
   var data = new DataView(new ArrayBuffer(8));
@@ -227,18 +231,27 @@ function setRawColorAt(data, x, y, w, h, r, g, b, a) {
   data[pos+3] = a;
 }
 
+var NPIXELS = 0;
+
 function draw_pixel(imgdata, width, height, coord, color)
 {
   var x = coord[0];
   var y = coord[1];
   if(x >= 0 && y >= 0 && x < width && y < height) {
-    console.assert(!isNaN(color[0]));
-    console.assert(!isNaN(color[1]));
-    console.assert(!isNaN(color[2]));
-    console.assert(!isNaN(color[3]));
-    setRawColorAt(imgdata, x, y, width, height,
-      color[0], color[1], color[2], color[3]);
-    //Math.round(color[0]), Math.round(color[1]), Math.round(color[2]), Math.round(color[3]));
+
+    // console.assert(!isNaN(color[0]));
+    // console.assert(!isNaN(color[1]));
+    // console.assert(!isNaN(color[2]));
+    // console.assert(!isNaN(color[3]));
+
+    var r = color[0]/65535.0;
+    var g = color[1]/65535.0;
+    var b = color[2]/65535.0;
+    var a = color[3]/65535.0;
+
+    setRawColorAt(imgdata, x, y, width, height, r, g, b, a);
+
+    NPIXELS++;
   } else {
     console.warn('Ignoring out-of-bounds coord', coord);
   }
@@ -247,8 +260,6 @@ function draw_pixel(imgdata, width, height, coord, color)
 function rasterize_bezier_curve(imgdata, width, height,
   ushift, dxu, dyu, color0, color3)
 {
-  var xu = new Array(4);
-  var yu = new Array(4);
   var x0, y0, u;
   var usteps = 1 << ushift;
 
@@ -272,8 +283,8 @@ function rasterize_bezier_curve(imgdata, width, height,
   var db = colorDeltaShiftedShort(b0, b3, ushift);
   var da = colorDeltaShiftedShort(a0, a3, ushift);
 
-  xu = fd_fixed(dxu);
-  yu = fd_fixed(dyu);
+  var xu = fd_fixed(dxu);
+  var yu = fd_fixed(dyu);
 
   x0 = fixed_from_double(dxu[0]);
   y0 = fixed_from_double(dyu[0]);
@@ -357,7 +368,19 @@ function draw_bezier_curve(imgdata, width, height, p, c0, c3)
       fd_down(yu);
     }
 
-    rasterize_bezier_curve(imgdata, width, height, ushift, xu, yu, c0, c3);
+    var ic0 = [
+      double_to_short(c0[0]),
+      double_to_short(c0[1]),
+      double_to_short(c0[2]),
+      double_to_short(c0[3])
+    ];
+    var ic3 = [
+      double_to_short(c3[0]),
+      double_to_short(c3[1]),
+      double_to_short(c3[2]),
+      double_to_short(c3[3])
+    ];
+    rasterize_bezier_curve(imgdata, width, height, ushift, xu, yu, ic0, ic3);
 
     draw_pixel(imgdata, width, height, p[3], c3);
   }
