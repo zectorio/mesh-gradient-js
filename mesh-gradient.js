@@ -232,8 +232,13 @@ function draw_pixel(imgdata, width, height, coord, color)
   var x = coord[0];
   var y = coord[1];
   if(x >= 0 && y >= 0 && x < width && y < height) {
+    console.assert(!isNaN(color[0]));
+    console.assert(!isNaN(color[1]));
+    console.assert(!isNaN(color[2]));
+    console.assert(!isNaN(color[3]));
     setRawColorAt(imgdata, x, y, width, height,
-      Math.round(color[0]), Math.round(color[1]), Math.round(color[2]), Math.round(color[3]));
+      color[0], color[1], color[2], color[3]);
+    //Math.round(color[0]), Math.round(color[1]), Math.round(color[2]), Math.round(color[3]));
   } else {
     console.warn('Ignoring out-of-bounds coord', coord);
   }
@@ -355,5 +360,126 @@ function draw_bezier_curve(imgdata, width, height, p, c0, c3)
     rasterize_bezier_curve(imgdata, width, height, ushift, xu, yu, c0, c3);
 
     draw_pixel(imgdata, width, height, p[3], c3);
+  }
+}
+
+function rasterize_bezier_patch(imgdata, width, height, vshift, p, col)
+{
+  var i,k;
+  var pv = [[],[],[],[]];
+  var cstart = [];
+  var cend = [];
+  var dcstart = [];
+  var dcend = [];
+
+  var v = 1 << vshift;
+
+  for(i=0; i<4; ++i) {
+    pv[i][0] = fd_init(p[i][0][0], p[i][1][0], p[i][2][0], p[i][3][0]);
+    pv[i][1] = fd_init(p[i][0][1], p[i][1][1], p[i][2][1], p[i][3][1]);
+
+    for(k=0; k<vshift; ++k) {
+      fd_down(pv[i][0]);
+      fd_down(pv[i][1]);
+    }
+  }
+
+  for(i=0; i<4; ++i) {
+    cstart[i] = col[0][i];
+    cend[i] = col[1][i];
+    dcstart[i] = (col[2][i] - col[0][i])/v;
+    dcend[i] = (col[3][i] - col[1][i])/v;
+  }
+
+  v++;
+
+  while(v--) {
+    var nodes = [];
+    for(i=0; i<4; ++i) {
+      nodes[i] = [
+        pv[i][0][0],
+        pv[i][1][0]
+      ]
+    }
+
+    draw_bezier_curve(imgdata, width, height, nodes, cstart, cend);
+
+    for(i=0; i<4; ++i) {
+      fd_fwd(pv[i][0]);
+      fd_fwd(pv[i][1]);
+      cstart[i] += dcstart[i];
+      cend[i] += dcend[i];
+    }
+  }
+}
+
+function draw_bezier_patch(imgdata, width, height, p, c)
+{
+  var i, j, v;
+  var top, bottom;
+  top = bottom = p[0][0][1];
+  for(i=0; i<4; ++i) {
+    for(j=0; j<4; ++j) {
+      top = Math.min(top, p[i][j][1]);
+      bottom = Math.max(bottom, p[i][j][1]);
+    }
+  }
+  v = intersect_interval(top, bottom, 0, height);
+  if(v === OUTSIDE) {
+    return;
+  }
+
+  var left, right;
+  left = right = p[0][0][0];
+  for(i=0; i<4; ++i) {
+    for(j=0; j<4; ++j) {
+      left = Math.min(left, p[i][j][0]);
+      right = Math.max(right, p[i][j][0]);
+    }
+  }
+
+  v &= intersect_interval(left, right, 0, width);
+
+  if(v === OUTSIDE) {
+    return;
+  }
+
+  var stepsSq = 0;
+  for(i=0; i<4; ++i) {
+    stepsSq = Math.max(stepsSq, bezier_steps_sq(p[i]));
+  }
+
+  if(stepsSq >= (v == INSIDE ? STEPS_MAX_V * STEPS_MAX_V : STEPS_CLIP_V * STEPS_CLIP_V))
+  {
+    var first = [];
+    var second = [];
+    var subc = [new Array(4), new Array(4), new Array(4), new Array(4)];
+
+    for(i=0; i<4; ++i) {
+      var result = split_bezier(p[i]);
+      first[i] = result[0];
+      second[i] = result[1];
+    }
+
+    for(i=0; i<4; ++i) {
+      subc[0][i] = c[0][i];
+      subc[1][i] = c[1][i];
+      subc[2][i] = 0.5 * (c[0][i] + c[2][i]);
+      subc[3][i] = 0.5 * (c[1][i] + c[3][i]);
+    }
+
+    draw_bezier_patch(imgdata, width, height, first, subc);
+
+    for(i=0; i<4; ++i) {
+      subc[0][i] = subc[2][i];
+      subc[1][i] = subc[3][i];
+      subc[2][i] = c[2][i];
+      subc[3][i] = c[3][i];
+    }
+
+    draw_bezier_patch(imgdata, width, height, second, subc);
+
+  } else {
+    rasterize_bezier_patch(imgdata, width, height, sqStepsToShift(stepsSq), p, c);
   }
 }
