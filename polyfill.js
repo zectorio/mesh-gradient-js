@@ -19,44 +19,50 @@ function color_css2rgb(css) {
   ];
 }
 
-function stopsToPatch(stops) {
-    for(var si=0; si<stops.length; si++) {
-      var stop = stops[si];
-      var pairs = stop.getAttribute('style').split(';');
-      var stopColor='#000000', stopOpacity=1;
-      for(var pi=0; pi<pairs.length; pi++) {
-        var pair = pairs[pi].split(':');
-        if(pair[0] === 'stop-color') {
-          stopColor = pair[1];
-        } else if(pair[0] === 'stop-opacity') {
-          stopOpacity = parseInt(pair[1]);
-        }
-      }
-      var rgb = color_css2rgb(stopColor);
-      rgb[3] = Math.round(255 * stopOpacity);
-      console.log(rgb);
+function stopsToCoons(stops) {
+  var cursor = [0,0];
+  var coons = [];
+  coons.push(cursor.slice(0));
+  var colors = [];
+
+  for(var si=0; si<stops.length; si++) {
+    var stop = stops[si];
+
+    var path = stop.getAttribute('path').split(/\s+/);
+    console.assert(path.length === 4);
+    for(var i=1; i<4; i++) {
+      var coord = path[i].split(',');
+      cursor[0] += parseInt(coord[0]);
+      cursor[1] += parseInt(coord[1]);
+      coons.push(cursor.slice(0));
     }
 
+    var pairs = stop.getAttribute('style').split(';');
+    var stopColor='#000000', stopOpacity=1;
+    for(var pi=0; pi<pairs.length; pi++) {
+      var pair = pairs[pi].split(':');
+      if(pair[0] === 'stop-color') {
+        stopColor = pair[1];
+      } else if(pair[0] === 'stop-opacity') {
+        stopOpacity = parseInt(pair[1]);
+      }
+    }
+    var rgba = color_css2rgb(stopColor);
+    rgba[3] = Math.round(255 * stopOpacity);
+    colors.push(rgba);
+  }
+
+  coons.pop(); // The first point gets added twice, as it's a closed loop
+
+  return {coons:coons,colors:colors};
 }
 
 var canvas = document.createElementNS('http://www.w3.org/1999/xhtml','canvas');
-canvas.width = 256; // svg.clientWidth;
-canvas.height = 256; //svg.clientHeight;
+canvas.width = svg.clientWidth;
+canvas.height = svg.clientHeight;
 var ctx = canvas.getContext('2d');
-ctx.clearRect(0,0,256,256);
-ctx.fillStyle = '#0f0';
-ctx.fillRect(0,0,150,150);
-ctx.fillStyle = '#ff0';
-ctx.fillRect(20,20,150,150);
-var imgdata = ctx.getImageData(0,0,256,256);
+var imgdata = ctx.getImageData(0,0,svg.clientWidth,svg.clientHeight);
 
-var img = document.createElementNS('http://www.w3.org/2000/svg','image');
-img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', canvas.toDataURL());
-img.setAttribute('x','0');
-img.setAttribute('y','0');
-img.setAttribute('width','256');
-img.setAttribute('height','256');
-svg.appendChild(img);
 
 var meshGradients = document.querySelectorAll('meshGradient');
 for(var i=0; i<meshGradients.length; i++) {
@@ -70,7 +76,9 @@ for(var i=0; i<meshGradients.length; i++) {
       var stops = patch.querySelectorAll('stop');
       if(j === 0 && k === 0) {
         console.assert(stops.length === 4);
-        stopsToPatch(stops);
+        var data = stopsToCoons(stops);
+        draw_bezier_patch(
+          imgdata.data, svg.clientWidth,svg.clientHeight, interpolateCoons(data.coons), data.colors);
       } else if(j === 0 && k !== 0) {
         console.assert(stops.length === 2);
       } else if(j !== 0 && k === 0) {
@@ -81,3 +89,12 @@ for(var i=0; i<meshGradients.length; i++) {
     }
   }
 }
+
+ctx.putImageData(imgdata, 0,0);
+var img = document.createElementNS('http://www.w3.org/2000/svg','image');
+img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', canvas.toDataURL());
+img.setAttribute('x','0');
+img.setAttribute('y','0');
+img.setAttribute('width',''+svg.clientWidth);
+img.setAttribute('height',''+svg.clientHeight);
+svg.appendChild(img);
