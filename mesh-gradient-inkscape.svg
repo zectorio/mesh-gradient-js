@@ -17,42 +17,6 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    sodipodi:docname="mesh-grade-inkscape.svg">
-  <script type="application/ecmascript"> <![CDATA[
-    var svg = document.querySelector('svg');
-    svg.onload = function () {
-      var canvas = document.createElementNS('http://www.w3.org/1999/xhtml','canvas');
-      canvas.width = 256; // svg.clientWidth;
-      canvas.height = 256; //svg.clientHeight;
-      var ctx = canvas.getContext('2d');
-      ctx.clearRect(0,0,256,256);
-      ctx.fillStyle = '#0f0';
-      ctx.fillRect(0,0,150,150);
-      ctx.fillStyle = '#ff0';
-      ctx.fillRect(20,20,150,150);
-
-      var img = document.createElementNS('http://www.w3.org/2000/svg','image');
-      img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', canvas.toDataURL());
-      img.setAttribute('x','0');
-      img.setAttribute('y','0');
-      img.setAttribute('width','256');
-      img.setAttribute('height','256');
-      svg.appendChild(img);
-
-      var meshGradients = document.querySelectorAll('meshGradient');
-      for(var i=0; i<meshGradients.length; i++) {
-        var mg = meshGradients[i];
-        var rows = mg.querySelectorAll('meshRow');
-        for(var j=0; j<rows.length; j++) {
-          var row = rows[j];
-          var patches = row.querySelectorAll('meshPatch');
-          for(var k=0; k<patches.length; k++) {
-            var patch = patches[k];
-            console.log(patch);
-          }
-        }
-      }
-    };
-  ]]> </script>
   <defs
      id="defs11352">
     <linearGradient

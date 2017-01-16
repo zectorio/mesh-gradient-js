@@ -1,0 +1,21 @@
+{
+  "name": "mesh-gradient-js",
+  "version": "0.1.0",
+  "description": "Javascript implementation of Mesh Gradient rendering",
+  "main": "draw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zectorio/mesh-gradient-js.git"
+  },
+  "author": "Jayesh Salvi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zectorio/mesh-gradient-js/issues"
+  },
+  "homepage": "https://github.com/zectorio/mesh-gradient-js#readme",
+  "dependencies": {
+  }
+}
