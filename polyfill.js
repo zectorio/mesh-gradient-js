@@ -19,6 +19,26 @@ function color_css2rgb(css) {
   ];
 }
 
+function stopsToPatch(stops) {
+    for(var si=0; si<stops.length; si++) {
+      var stop = stops[si];
+      var pairs = stop.getAttribute('style').split(';');
+      var stopColor='#000000', stopOpacity=1;
+      for(var pi=0; pi<pairs.length; pi++) {
+        var pair = pairs[pi].split(':');
+        if(pair[0] === 'stop-color') {
+          stopColor = pair[1];
+        } else if(pair[0] === 'stop-opacity') {
+          stopOpacity = parseInt(pair[1]);
+        }
+      }
+      var rgb = color_css2rgb(stopColor);
+      rgb[3] = Math.round(255 * stopOpacity);
+      console.log(rgb);
+    }
+
+}
+
 var canvas = document.createElementNS('http://www.w3.org/1999/xhtml','canvas');
 canvas.width = 256; // svg.clientWidth;
 canvas.height = 256; //svg.clientHeight;
@@ -28,6 +48,7 @@ ctx.fillStyle = '#0f0';
 ctx.fillRect(0,0,150,150);
 ctx.fillStyle = '#ff0';
 ctx.fillRect(20,20,150,150);
+var imgdata = ctx.getImageData(0,0,256,256);
 
 var img = document.createElementNS('http://www.w3.org/2000/svg','image');
 img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', canvas.toDataURL());
@@ -49,22 +70,7 @@ for(var i=0; i<meshGradients.length; i++) {
       var stops = patch.querySelectorAll('stop');
       if(j === 0 && k === 0) {
         console.assert(stops.length === 4);
-        for(var si=0; si<stops.length; si++) {
-          var stop = stops[si];
-          var pairs = stop.getAttribute('style').split(';');
-          var stopColor='#000000', stopOpacity=1;
-          for(var pi=0; pi<pairs.length; pi++) {
-            var pair = pairs[pi].split(':');
-            if(pair[0] === 'stop-color') {
-              stopColor = pair[1];
-            } else if(pair[0] === 'stop-opacity') {
-              stopOpacity = parseInt(pair[1]);
-            }
-          }
-          var rgb = color_css2rgb(stopColor);
-          rgb[3] = Math.round(255 * stopOpacity);
-          console.log(rgb);
-        }
+        stopsToPatch(stops);
       } else if(j === 0 && k !== 0) {
         console.assert(stops.length === 2);
       } else if(j !== 0 && k === 0) {

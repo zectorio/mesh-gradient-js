@@ -11,7 +11,8 @@ var insvg = process.argv[2];
 
 var polyfill =
   '<script type="application/ecmascript"> <![CDATA['+
-  fs.readFileSync('polyfill.js').toString()+
+  fs.readFileSync('mesh-gradient.js').toString()+'\n'+
+  fs.readFileSync('polyfill.js').toString()+'\n'+
   ']]> </script>';
 
 var outname = process.argv[3] ? process.argv[3] : 'out.svg';
