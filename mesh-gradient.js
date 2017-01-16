@@ -506,3 +506,27 @@ function draw_bezier_patch(imgdata, width, height, p, c)
     rasterize_bezier_patch(imgdata, width, height, sqStepsToShift(stepsSq), p, c);
   }
 }
+
+function interpolateCoons(coons) {
+  console.assert(coons.length === 12);
+  var patch = [
+    [ coons[0], coons[1], coons[2], coons[3] ],
+    [ coons[11], null, null, coons[4] ],
+    [ coons[10], null, null, coons[5] ],
+    [ coons[9], coons[8], coons[7], coons[6] ]
+  ];
+  // TODO : following is very simplistic and incorrect interpolation
+  var pa, pb;
+
+  pa = coons[1];
+  pb = coons[8];
+  patch[1][1] = [ pa[0] + (1/3)*(pb[0]-pa[0]), pa[1] + (1/3)*(pb[1]-pa[1]) ];
+  patch[2][1] = [ pa[0] + (2/3)*(pb[0]-pa[0]), pa[1] + (2/3)*(pb[1]-pa[1]) ];
+
+  pa = coons[2];
+  pb = coons[7];
+  patch[1][2] = [ pa[0] + (1/3)*(pb[0]-pa[0]), pa[1] + (1/3)*(pb[1]-pa[1]) ];
+  patch[2][2] = [ pa[0] + (2/3)*(pb[0]-pa[0]), pa[1] + (2/3)*(pb[1]-pa[1]) ];
+  return patch;
+}
+

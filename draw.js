@@ -13,12 +13,28 @@ var data = {
     ],
     colors : [[255,0,0,255], [0,255,0,255], [0,0,255,255], [255,255,0,255]]
   },
+  'twisted1coons' : {
+    coons :[
+      [100,50], [200,100], [300,100], [310,50],
+      [400,150], [450,300], [400,450], [300,400],
+      [200,400], [100,450], [100,300], [100,150]
+    ],
+    colors : [[255,0,0,255], [0,255,0,255], [0,0,255,255], [255,255,0,255]]
+  },
   'square': {
     patch : [
       [ [100,100], [200,100], [300,100], [400,100] ],
       [ [100,200], [200,200], [300,200], [400,200] ],
       [ [100,300], [200,300], [300,300], [400,300] ],
       [ [100,400], [200,400], [300,400], [400,400] ]
+    ],
+    colors : [[255,0,0,255], [0,255,0,255], [0,0,255,255], [255,255,0,255]]
+  },
+  'squarecoons': {
+    coons : [
+      [100,100], [200,100], [300,100], [400,100],
+      [400,200], [400,300], [400,400], [300,400],
+      [200,400], [100,400], [100,300], [100,200]
     ],
     colors : [[255,0,0,255], [0,255,0,255], [0,0,255,255], [255,255,0,255]]
   },
@@ -42,7 +58,7 @@ var data = {
   }
 };
 
-activeSample = data.square;
+activeSample = data.twisted1coons;
 
 window.onload = function () {
 
@@ -54,13 +70,22 @@ window.onload = function () {
   svg.onmousemove = onCanvasMouseMove;
 
   drawCanvas();
-  createHandles(activeSample.patch);
+  if(activeSample.patch) {
+    createGridHandles(activeSample.patch);
+  } else if(activeSample.coons) {
+    createBoundaryHandles(activeSample.coons);
+  }
 };
 
 var activeSample;
 
 function drawPatch() {
-  draw_bezier_patch(imgdata.data, W, H, activeSample.patch, activeSample.colors);
+  if(activeSample.patch) {
+    draw_bezier_patch(imgdata.data, W, H, activeSample.patch, activeSample.colors);
+  } else if(activeSample.coons) {
+    var patch = interpolateCoons(activeSample.coons);
+    draw_bezier_patch(imgdata.data, W, H, patch, activeSample.colors);
+  }
 }
 
 function drawCanvas() {
@@ -78,7 +103,7 @@ function drawCanvas() {
   ctx.putImageData(imgdata, 0,0);
 
   var t1 = new Date();
-  console.log((t1-t0)+' msec');
+  // console.log((t1-t0)+' msec');
 }
 
 function redraw() {
@@ -129,7 +154,7 @@ function updateHandles() {
   }
 }
 
-function createHandles(patch) {
+function createGridHandles(patch) {
   var svg = document.querySelector('svg');
   var counter = 0;
   for(var i=0; i<patch.length; i++) {
@@ -152,6 +177,10 @@ function createHandles(patch) {
       counter++;
     }
   }
+}
+
+function createBoundaryHandles() {
+
 }
 
 function drawCurve() {
