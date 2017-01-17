@@ -4,7 +4,8 @@
   "description": "Javascript implementation of Mesh Gradient rendering",
   "main": "draw.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "exitonchange": "node -e \"require('fs').watchFile(process.argv[1],()=>process.exit())\"",
+    "addpolyfill": "node add-polyfill-to-svg.js sample.svg"
   },
   "repository": {
     "type": "git",
