@@ -32,9 +32,13 @@ function stopsToCoons(stops) {
     console.assert(path.length === 4);
     for(var i=1; i<4; i++) {
       var coord = path[i].split(',');
-      cursor[0] += parseInt(coord[0]);
-      cursor[1] += parseInt(coord[1]);
-      coons.push(cursor.slice(0));
+      var dx = parseInt(coord[0]);
+      var dy = parseInt(coord[1]);
+      coons.push([cursor[0]+dx, cursor[1]+dy]);
+      if(i === 3) {
+        cursor[0] += dx;
+        cursor[1] += dy;
+      }
     }
 
     var pairs = stop.getAttribute('style').split(';');
@@ -57,7 +61,27 @@ function stopsToCoons(stops) {
   return {coons:coons,colors:colors};
 }
 
-function renderPatches() {
+function getMeshGradientAABB(patchData) {
+  var xmin = Infinity;
+  var xmax = -Infinity;
+  var ymin = Infinity;
+  var ymax = -Infinity;
+
+  for(var i=0; i<patchData.length; i++) {
+    var data = patchData[i];
+    for(var j=0; j<data.coons.length; j++) {
+      var point = data.coons[j];
+      xmin = Math.min(xmin, point[0]);
+      xmax = Math.max(xmax, point[0]);
+      ymin = Math.min(ymin, point[1]);
+      ymax = Math.max(ymax, point[1]);
+    }
+  }
+
+  return {xmin:xmin, ymin:ymin, xmax:xmax, ymax:ymax};
+}
+
+function renderPatches(patchData) {
   var canvas = document.createElementNS('http://www.w3.org/1999/xhtml','canvas');
   canvas.width = svg.clientWidth;
   canvas.height = svg.clientHeight;
@@ -71,6 +95,13 @@ function renderPatches() {
       interpolateCoons(data.coons), data.colors);
   }
 
+  var aabb = getMeshGradientAABB(patchData);
+  var width = aabb.xmax-aabb.xmin;
+  var height = aabb.ymax-aabb.ymin;
+  console.assert(width > 0 && height > 0);
+  console.log('Width',width,'Height',height);
+  console.log(aabb);
+
   ctx.putImageData(imgdata, 0,0);
   var img = document.createElementNS('http://www.w3.org/2000/svg','image');
   img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', canvas.toDataURL());
@@ -82,32 +113,34 @@ function renderPatches() {
 }
 
 
-
-var patchData = [];
-var meshGradients = document.querySelectorAll('meshGradient');
-for(var i=0; i<meshGradients.length; i++) {
-  var mg = meshGradients[i];
-  var rows = mg.querySelectorAll('meshRow');
-  for(var j=0; j<rows.length; j++) {
-    var row = rows[j];
-    var patches = row.querySelectorAll('meshPatch');
-    for(var k=0; k<patches.length; k++) {
-      var patch = patches[k];
-      var stops = patch.querySelectorAll('stop');
-      if(j === 0 && k === 0) {
-        console.assert(stops.length === 4);
-        var data = stopsToCoons(stops);
-        patchData.push(data);
-      } else if(j === 0 && k !== 0) {
-        console.assert(stops.length === 2);
-      } else if(j !== 0 && k === 0) {
-        console.assert(stops.length === 2);
-      } else if(j !== 0 && k !== 0) {
-        console.assert(stops.length === 1);
+function run() {
+  var patchData = [];
+  var meshGradients = document.querySelectorAll('meshGradient');
+  for(var i=0; i<meshGradients.length; i++) {
+    var mg = meshGradients[i];
+    var rows = mg.querySelectorAll('meshRow');
+    for(var j=0; j<rows.length; j++) {
+      var row = rows[j];
+      var patches = row.querySelectorAll('meshPatch');
+      for(var k=0; k<patches.length; k++) {
+        var patch = patches[k];
+        var stops = patch.querySelectorAll('stop');
+        if(j === 0 && k === 0) {
+          console.assert(stops.length === 4);
+          var data = stopsToCoons(stops);
+          patchData.push(data);
+        } else if(j === 0 && k !== 0) {
+          console.assert(stops.length === 2);
+        } else if(j !== 0 && k === 0) {
+          console.assert(stops.length === 2);
+        } else if(j !== 0 && k !== 0) {
+          console.assert(stops.length === 1);
+        }
       }
     }
   }
+  renderPatches(patchData);
 }
 
-renderPatches();
+run();
 
