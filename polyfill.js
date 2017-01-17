@@ -52,18 +52,38 @@ function stopsToCoons(stops) {
     colors.push(rgba);
   }
 
-  coons.pop(); // The first point gets added twice, as it's a closed loop
+  coons.pop(); // The first point gets added twice, because it's a closed loop
 
   return {coons:coons,colors:colors};
 }
 
-var canvas = document.createElementNS('http://www.w3.org/1999/xhtml','canvas');
-canvas.width = svg.clientWidth;
-canvas.height = svg.clientHeight;
-var ctx = canvas.getContext('2d');
-var imgdata = ctx.getImageData(0,0,svg.clientWidth,svg.clientHeight);
+function renderPatches() {
+  var canvas = document.createElementNS('http://www.w3.org/1999/xhtml','canvas');
+  canvas.width = svg.clientWidth;
+  canvas.height = svg.clientHeight;
+  var ctx = canvas.getContext('2d');
+  var imgdata = ctx.getImageData(0,0,svg.clientWidth,svg.clientHeight);
+
+  for(var i=0; i<patchData.length; i++) {
+    var data = patchData[i];
+    draw_bezier_patch(
+      imgdata.data, svg.clientWidth,svg.clientHeight,
+      interpolateCoons(data.coons), data.colors);
+  }
+
+  ctx.putImageData(imgdata, 0,0);
+  var img = document.createElementNS('http://www.w3.org/2000/svg','image');
+  img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', canvas.toDataURL());
+  img.setAttribute('x','0');
+  img.setAttribute('y','0');
+  img.setAttribute('width',''+svg.clientWidth);
+  img.setAttribute('height',''+svg.clientHeight);
+  svg.appendChild(img);
+}
 
 
+
+var patchData = [];
 var meshGradients = document.querySelectorAll('meshGradient');
 for(var i=0; i<meshGradients.length; i++) {
   var mg = meshGradients[i];
@@ -77,8 +97,7 @@ for(var i=0; i<meshGradients.length; i++) {
       if(j === 0 && k === 0) {
         console.assert(stops.length === 4);
         var data = stopsToCoons(stops);
-        draw_bezier_patch(
-          imgdata.data, svg.clientWidth,svg.clientHeight, interpolateCoons(data.coons), data.colors);
+        patchData.push(data);
       } else if(j === 0 && k !== 0) {
         console.assert(stops.length === 2);
       } else if(j !== 0 && k === 0) {
@@ -90,11 +109,5 @@ for(var i=0; i<meshGradients.length; i++) {
   }
 }
 
-ctx.putImageData(imgdata, 0,0);
-var img = document.createElementNS('http://www.w3.org/2000/svg','image');
-img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', canvas.toDataURL());
-img.setAttribute('x','0');
-img.setAttribute('y','0');
-img.setAttribute('width',''+svg.clientWidth);
-img.setAttribute('height',''+svg.clientHeight);
-svg.appendChild(img);
+renderPatches();
+
