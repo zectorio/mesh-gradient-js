@@ -81,7 +81,71 @@ function getMeshGradientAABB(patchData) {
   return {xmin:xmin, ymin:ymin, xmax:xmax, ymax:ymax};
 }
 
-function meshGradToImg(patchData, mgx, mgy) {
+function setClip(ctx, pathdata) {
+  ctx.beginPath();
+  var to, cp1, cp2;
+  var cursor = [0,0];
+  var parts = pathdata.split(' ');
+  var cmd;
+  console.log(parts);
+  for(var i=0; i<parts.length; ) {
+    if(parts[i].indexOf(',') < 0) {
+      cmd = parts[i];
+      i++;
+    } else {
+      // Otherwise we continue to assume same command for further tokens
+    }
+    switch(cmd) {
+      case 'm':
+        to = parts[i++].split(',');
+        cursor[0] += parseFloat(to[0]);
+        cursor[1] += parseFloat(to[1]);
+        ctx.moveTo(cursor[0], cursor[1]);
+        break;
+      case 'c':
+        cp1 = parts[i++].split(',');
+        cp2 = parts[i++].split(',');
+        to = parts[i++].split(',');
+        ctx.bezierCurveTo(
+          cursor[0]+parseFloat(cp1[0]), cursor[1]+parseFloat(cp1[1]),
+          cursor[0]+parseFloat(cp2[0]), cursor[1]+parseFloat(cp2[1]),
+          cursor[0]+parseFloat(to[0]), cursor[1]+parseFloat(to[1])
+        );
+        cursor[0] += parseFloat(to[0]);
+        cursor[1] += parseFloat(to[1]);
+        break;
+      case 'M':
+        to = parts[i++].split(',');
+        cursor[0] = parseFloat(to[0]);
+        cursor[1] = parseFloat(to[1]);
+        ctx.moveTo(cursor[0], cursor[1]);
+        break;
+      case 'C':
+        cp1 = parts[i++].split(',');
+        cp2 = parts[i++].split(',');
+        to = parts[i++].split(',');
+        ctx.bezierCurveTo(
+          parseFloat(cp1[0]), parseFloat(cp1[1]),
+          parseFloat(cp2[0]), parseFloat(cp2[1]),
+          parseFloat(to[0]), parseFloat(to[1])
+        );
+        cursor[0] = parseFloat(to[0]);
+        cursor[1] = parseFloat(to[1]);
+        break;
+      case 'z':
+      case 'Z':
+        break;
+      default:
+        console.log('unexpected token', parts[i]);
+        i++;
+        break;
+    }
+  }
+  ctx.clip();
+}
+
+function meshGradToImg(patchData, mgx, mgy, elem) {
+
   var aabb = getMeshGradientAABB(patchData);
   var width = aabb.xmax-aabb.xmin;
   var height = aabb.ymax-aabb.ymin;
@@ -92,6 +156,7 @@ function meshGradToImg(patchData, mgx, mgy) {
   var ctx = canvas.getContext('2d');
   var imgdata = ctx.getImageData(0,0,width,height);
 
+  // Render mesh gradient
   for(var i=0; i<patchData.length; i++) {
     var data = patchData[i];
     draw_bezier_patch(
@@ -100,8 +165,27 @@ function meshGradToImg(patchData, mgx, mgy) {
   }
 
   ctx.putImageData(imgdata, 0,0);
+
+  // Set clip
+  var target = document.createElementNS('http://www.w3.org/1999/xhtml','canvas');
+  target.width = width;
+  target.height = height;
+  var tctx = target.getContext('2d');
+  if(elem.tagName === 'path') {
+    setClip(tctx, elem.getAttribute('d'));
+    tctx.drawImage(canvas, 0,0, width, height);
+  } else if(elem.tagName === 'ellipse') {
+    target = canvas;
+    console.warn('todo');
+  } else {
+    target = canvas;
+    console.warn('todo', elem.tagName);
+  }
+
+
+  // convert canvas to image element
   var img = document.createElementNS('http://www.w3.org/2000/svg','image');
-  img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', canvas.toDataURL());
+  img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', target.toDataURL());
   img.setAttribute('x', mgx);
   img.setAttribute('y', mgy);
   img.setAttribute('width',''+width);
@@ -144,12 +228,15 @@ function removeFill(node) {
   node.setAttribute('style', newpairs.join(';'));
 }
 
+
 function replaceElements(mgmap) {
   var keys = Object.keys(mgmap);
   searchForMeshGrads(svg, function (elem, mgid) {
     console.log('replacing for', elem.getAttribute('id'), mgid);
     if(keys.indexOf(mgid) >= 0) {
-      svg.insertBefore(mgmap[mgid], elem);
+      var mgdata = mgmap[mgid];
+      var img = meshGradToImg(mgdata.patchData, mgdata.x, mgdata.y, elem);
+      svg.insertBefore(img, elem);
       removeFill(elem);
     }
   });
@@ -157,9 +244,9 @@ function replaceElements(mgmap) {
 
 function run() {
   var meshGradMap = {};
-  var patchData = [];
   var meshGradients = document.querySelectorAll('meshGradient');
   for(var i=0; i<meshGradients.length; i++) {
+    var patchData = [];
     var mg = meshGradients[i];
     var mgid = mg.getAttribute('id');
     var mgx = mg.getAttribute('x');
@@ -184,8 +271,7 @@ function run() {
         }
       }
     }
-    var img = meshGradToImg(patchData, mgx, mgy);
-    meshGradMap[mgid] = img;
+    meshGradMap[mgid] = {patchData:patchData, x:mgx,y:mgy};
   }
 
   replaceElements(meshGradMap);
