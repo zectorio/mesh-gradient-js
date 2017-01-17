@@ -5,7 +5,7 @@
   "main": "draw.js",
   "scripts": {
     "exitonchange": "node -e \"require('fs').watchFile(process.argv[1],()=>process.exit())\"",
-    "addpolyfill": "node add-polyfill-to-svg.js sample.svg"
+    "addpolyfill": "node add-polyfill-to-svg.js"
   },
   "repository": {
     "type": "git",

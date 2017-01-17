@@ -130,16 +130,30 @@ function searchForMeshGrads(node, callback) {
   }
 }
 
+function removeFill(node) {
+  var style = node.getAttribute('style');
+  var pairs = style.split(';');
+  var newpairs = [];
+  for(var j=0; j<pairs.length; j++) {
+    var pair = pairs[j];
+    if(!pair.startsWith('fill')) {
+      newpairs.push(pair);
+    }
+  }
+  newpairs.push('fill:none');
+  node.setAttribute('style', newpairs.join(';'));
+}
+
 function replaceElements(mgmap) {
   var keys = Object.keys(mgmap);
   searchForMeshGrads(svg, function (elem, mgid) {
+    console.log('replacing for', elem.getAttribute('id'), mgid);
     if(keys.indexOf(mgid) >= 0) {
       svg.insertBefore(mgmap[mgid], elem);
-      svg.removeChild(elem);
+      removeFill(elem);
     }
   });
 }
-
 
 function run() {
   var meshGradMap = {};
@@ -170,9 +184,9 @@ function run() {
         }
       }
     }
+    var img = meshGradToImg(patchData, mgx, mgy);
+    meshGradMap[mgid] = img;
   }
-  var img = meshGradToImg(patchData, mgx, mgy);
-  meshGradMap[mgid] = img;
 
   replaceElements(meshGradMap);
 }
