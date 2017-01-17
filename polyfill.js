@@ -81,43 +81,75 @@ function getMeshGradientAABB(patchData) {
   return {xmin:xmin, ymin:ymin, xmax:xmax, ymax:ymax};
 }
 
-function renderPatches(patchData) {
+function meshGradToImg(patchData, mgx, mgy) {
+  var aabb = getMeshGradientAABB(patchData);
+  var width = aabb.xmax-aabb.xmin;
+  var height = aabb.ymax-aabb.ymin;
+
   var canvas = document.createElementNS('http://www.w3.org/1999/xhtml','canvas');
-  canvas.width = svg.clientWidth;
-  canvas.height = svg.clientHeight;
+  canvas.width = width;
+  canvas.height = height;
   var ctx = canvas.getContext('2d');
-  var imgdata = ctx.getImageData(0,0,svg.clientWidth,svg.clientHeight);
+  var imgdata = ctx.getImageData(0,0,width,height);
 
   for(var i=0; i<patchData.length; i++) {
     var data = patchData[i];
     draw_bezier_patch(
-      imgdata.data, svg.clientWidth,svg.clientHeight,
+      imgdata.data, width,height,
       interpolateCoons(data.coons), data.colors);
   }
-
-  var aabb = getMeshGradientAABB(patchData);
-  var width = aabb.xmax-aabb.xmin;
-  var height = aabb.ymax-aabb.ymin;
-  console.assert(width > 0 && height > 0);
-  console.log('Width',width,'Height',height);
-  console.log(aabb);
 
   ctx.putImageData(imgdata, 0,0);
   var img = document.createElementNS('http://www.w3.org/2000/svg','image');
   img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', canvas.toDataURL());
-  img.setAttribute('x','0');
-  img.setAttribute('y','0');
-  img.setAttribute('width',''+svg.clientWidth);
-  img.setAttribute('height',''+svg.clientHeight);
-  svg.appendChild(img);
+  img.setAttribute('x', mgx);
+  img.setAttribute('y', mgy);
+  img.setAttribute('width',''+width);
+  img.setAttribute('height',''+height);
+  return img;
+}
+
+function searchForMeshGrads(node, callback) {
+
+  var style = node.getAttribute('style');
+  if(style) {
+    var pairs = style.split(';');
+    for(var j=0; j<pairs.length; j++) {
+      var pair = pairs[j];
+      var value = pair.split(':')[1];
+      var result = /url\(#(meshGradient\d+)\)/.exec(value);
+      if(result && result.length > 1) {
+        callback(node, result[1]);
+      }
+    }
+  }
+
+  for(var i=0; i<node.children.length; i++) {
+    var child = node.children[i];
+    searchForMeshGrads(child, callback);
+  }
+}
+
+function replaceElements(mgmap) {
+  var keys = Object.keys(mgmap);
+  searchForMeshGrads(svg, function (elem, mgid) {
+    if(keys.indexOf(mgid) >= 0) {
+      svg.insertBefore(mgmap[mgid], elem);
+      svg.removeChild(elem);
+    }
+  });
 }
 
 
 function run() {
+  var meshGradMap = {};
   var patchData = [];
   var meshGradients = document.querySelectorAll('meshGradient');
   for(var i=0; i<meshGradients.length; i++) {
     var mg = meshGradients[i];
+    var mgid = mg.getAttribute('id');
+    var mgx = mg.getAttribute('x');
+    var mgy = mg.getAttribute('y');
     var rows = mg.querySelectorAll('meshRow');
     for(var j=0; j<rows.length; j++) {
       var row = rows[j];
@@ -139,7 +171,10 @@ function run() {
       }
     }
   }
-  renderPatches(patchData);
+  var img = meshGradToImg(patchData, mgx, mgy);
+  meshGradMap[mgid] = img;
+
+  replaceElements(meshGradMap);
 }
 
 run();

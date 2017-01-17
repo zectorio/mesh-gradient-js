@@ -16,7 +16,7 @@
    id="svg11346"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="mesh-gradient-inkscape.svg">
+   sodipodi:docname="sample.svg">
   <defs
      id="defs11352">
     <linearGradient
@@ -95,6 +95,13 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <ellipse
+     ry="128.25111"
+     rx="133.93124"
+     cy="153.96109"
+     cx="441.85355"
+     id="ellipse5941"
+     style="fill:#80ffb3;fill-opacity:1;stroke:none;stroke-width:5.30000019;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   <rect
      style="fill:url(#meshGradient5889);fill-opacity:1"
      id="rect11482"
@@ -102,4 +109,11 @@
      height="200"
      x="300.00003"
      y="99.999985" />
+  <ellipse
+     style="fill:#aa4400;fill-opacity:1;stroke:none;stroke-width:5.30000019;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path5939"
+     cx="228.9985"
+     cy="228.69951"
+     rx="133.93124"
+     ry="128.25111" />
 </svg>

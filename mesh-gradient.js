@@ -237,7 +237,7 @@ function draw_pixel(imgdata, width, height, coord, color)
 {
   var x = coord[0];
   var y = coord[1];
-  if(x >= 0 && y >= 0 && x < width && y < height) {
+  if(x >= 0 && y >= 0 && x <= width && y <= height) {
 
     // console.assert(!isNaN(color[0]));
     // console.assert(!isNaN(color[1]));
