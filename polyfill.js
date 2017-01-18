@@ -29,7 +29,9 @@ function stopsToCoons(stops) {
     var stop = stops[si];
 
     var path = stop.getAttribute('path').split(/\s+/);
-    console.assert(path.length === 4);
+    if(path.length !== 4) {
+      console.warn(path);
+    }
     for(var i=1; i<4; i++) {
       var coord = path[i].split(',');
       var dx = parseInt(coord[0]);
@@ -41,22 +43,27 @@ function stopsToCoons(stops) {
       }
     }
 
-    var pairs = stop.getAttribute('style').split(';');
-    var stopColor='#000000', stopOpacity=1;
-    for(var pi=0; pi<pairs.length; pi++) {
-      var pair = pairs[pi].split(':');
-      if(pair[0] === 'stop-color') {
-        stopColor = pair[1];
-      } else if(pair[0] === 'stop-opacity') {
-        stopOpacity = parseInt(pair[1]);
+    var style = stop.getAttribute('style');
+    if(style) {
+      var pairs = style.split(';');
+      var stopColor='#000000', stopOpacity=1;
+      for(var pi=0; pi<pairs.length; pi++) {
+        var pair = pairs[pi].split(':');
+        if(pair[0] === 'stop-color') {
+          stopColor = pair[1];
+        } else if(pair[0] === 'stop-opacity') {
+          stopOpacity = parseInt(pair[1]);
+        }
       }
+      var rgba = color_css2rgb(stopColor);
+      rgba[3] = Math.round(255 * stopOpacity);
+      colors.push(rgba);
     }
-    var rgba = color_css2rgb(stopColor);
-    rgba[3] = Math.round(255 * stopOpacity);
-    colors.push(rgba);
   }
 
-  coons.pop(); // The first point gets added twice, because it's a closed loop
+  if(stops.length === 4) {
+    coons.pop(); // The first point gets added twice, because it's a closed loop
+  }
 
   return {coons:coons,colors:colors};
 }
@@ -68,13 +75,16 @@ function getMeshGradientAABB(patchData) {
   var ymax = -Infinity;
 
   for(var i=0; i<patchData.length; i++) {
-    var data = patchData[i];
-    for(var j=0; j<data.coons.length; j++) {
-      var point = data.coons[j];
-      xmin = Math.min(xmin, point[0]);
-      xmax = Math.max(xmax, point[0]);
-      ymin = Math.min(ymin, point[1]);
-      ymax = Math.max(ymax, point[1]);
+    var row = patchData[i];
+    for(var j=0; j<row.length; j++) {
+      var data = row[j];
+      for (var k = 0; k < data.coons.length; k++) {
+        var point = data.coons[k];
+        xmin = Math.min(xmin, point[0]);
+        xmax = Math.max(xmax, point[0]);
+        ymin = Math.min(ymin, point[1]);
+        ymax = Math.max(ymax, point[1]);
+      }
     }
   }
 
@@ -87,7 +97,6 @@ function setClip(ctx, pathdata, offset) {
   var cursor = [0,0];
   var parts = pathdata.split(' ');
   var cmd;
-  console.log(parts);
   for(var i=0; i<parts.length; ) {
     if(parts[i].indexOf(',') < 0) {
       cmd = parts[i];
@@ -138,7 +147,7 @@ function setClip(ctx, pathdata, offset) {
       case 'Z':
         break;
       default:
-        console.log('unexpected token', parts[i]);
+        console.error('unexpected token', parts[i]);
         i++;
         break;
     }
@@ -160,10 +169,18 @@ function meshGradToImg(patchData, mgx, mgy, elem) {
 
   // Render mesh gradient
   for(var i=0; i<patchData.length; i++) {
-    var data = patchData[i];
-    draw_bezier_patch(
-      imgdata.data, width,height,
-      interpolateCoons(data.coons), data.colors);
+    var row = patchData[i];
+    for(var j=0; j<row.length; j++) {
+      var data = row[j];
+      if(i === 0 && j === 0) {
+        draw_bezier_patch(
+          imgdata.data, width,height,
+          interpolateCoons(data.coons), data.colors);
+      } else if(i !== 0 && j === 0) {
+      } else if(i === 0 && j !== 0) {
+      } else if(i !== 0 && j !== 0) {
+      }
+    }
   }
 
   ctx.putImageData(imgdata, 0,0);
@@ -247,6 +264,7 @@ function replaceElements(mgmap) {
 function run() {
   var meshGradMap = {};
   var meshGradients = document.querySelectorAll('meshGradient');
+  var data;
   for(var i=0; i<meshGradients.length; i++) {
     var patchData = [];
     var mg = meshGradients[i];
@@ -254,23 +272,25 @@ function run() {
     var mgx = mg.getAttribute('x');
     var mgy = mg.getAttribute('y');
     var rows = mg.querySelectorAll('meshRow');
+    patchData = new Array(rows.length);
     for(var j=0; j<rows.length; j++) {
       var row = rows[j];
       var patches = row.querySelectorAll('meshPatch');
+      patchData[j] = new Array(patches.length);
       for(var k=0; k<patches.length; k++) {
         var patch = patches[k];
         var stops = patch.querySelectorAll('stop');
-        if(j === 0 && k === 0) {
-          console.assert(stops.length === 4);
-          var data = stopsToCoons(stops);
-          patchData.push(data);
-        } else if(j === 0 && k !== 0) {
-          console.assert(stops.length === 2);
-        } else if(j !== 0 && k === 0) {
-          console.assert(stops.length === 2);
-        } else if(j !== 0 && k !== 0) {
-          console.assert(stops.length === 1);
-        }
+        // if(j === 0 && k === 0) {
+        //   console.assert(stops.length === 4);
+        // } else if(j === 0 && k !== 0) {
+        //   console.assert(stops.length === 3);
+        // } else if(j !== 0 && k === 0) {
+        //   console.assert(stops.length === 3);
+        // } else if(j !== 0 && k !== 0) {
+        //   console.assert(stops.length === 2);
+        // }
+        data = stopsToCoons(stops);
+        patchData[j][k] = data;
       }
     }
     meshGradMap[mgid] = {patchData:patchData, x:mgx,y:mgy};
