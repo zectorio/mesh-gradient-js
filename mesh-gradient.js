@@ -530,3 +530,13 @@ function interpolateCoons(coons) {
   return patch;
 }
 
+function drawMeshGradientPatch(imgdata, width, height, cpoints, colors)
+{
+  var reorderedColors = [
+    colors[0],
+    colors[3],
+    colors[1],
+    colors[2]
+  ];
+  draw_bezier_patch(imgdata, width, height, cpoints, reorderedColors);
+}
