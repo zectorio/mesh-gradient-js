@@ -31,90 +31,6 @@
          offset="1"
          id="stop5736" />
     </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       id="linearGradient5998">
-      <stop
-         style="stop-color:#80ffb3;stop-opacity:1;"
-         offset="0"
-         id="stop6000" />
-      <stop
-         style="stop-color:#80ffb3;stop-opacity:0;"
-         offset="1"
-         id="stop6002" />
-    </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       id="linearGradient5477">
-      <stop
-         style="stop-color:#ff0000;stop-opacity:1;"
-         offset="0"
-         id="stop5479" />
-      <stop
-         style="stop-color:#ff0000;stop-opacity:0;"
-         offset="1"
-         id="stop5481" />
-    </linearGradient>
-    <meshGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5477"
-       id="meshGradient5889"
-       x="300.00003"
-       y="99.999985"
-       gradientUnits="userSpaceOnUse">
-      <meshRow
-         id="meshRow5927">
-        <meshPatch
-           id="meshPatch5929">
-          <stop
-             path="c 66.6667,0  133.333,0  200,0"
-             style="stop-color:#ff0000;stop-opacity:1"
-             id="stop5931" />
-          <stop
-             path="c 0,66.6667  0,133.333  0,200"
-             style="stop-color:#00ff00;stop-opacity:1"
-             id="stop5933" />
-          <stop
-             path="c -66.6667,0  -133.333,0  -200,0"
-             style="stop-color:#0000ff;stop-opacity:1"
-             id="stop5935" />
-          <stop
-             path="c 0,-66.6667  0,-133.333  0,-200"
-             style="stop-color:#ffff00;stop-opacity:1"
-             id="stop5937" />
-        </meshPatch>
-      </meshRow>
-    </meshGradient>
-    <meshGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5998"
-       id="meshGradient6354"
-       x="97.145859"
-       y="80.927422"
-       gradientUnits="userSpaceOnUse">
-      <meshRow
-         id="meshRow6404">
-        <meshPatch
-           id="meshPatch6406">
-          <stop
-             path="c 79.0406,0  158.081,0  237.122,0"
-             style="stop-color:#17280b;stop-opacity:1"
-             id="stop6408" />
-          <stop
-             path="c 0,91.7957  0,183.591  0,275.387"
-             style="stop-color:#d45500;stop-opacity:1"
-             id="stop6410" />
-          <stop
-             path="c -79.0406,0  -158.081,0  -237.122,0"
-             style="stop-color:#abc837;stop-opacity:1"
-             id="stop6412" />
-          <stop
-             path="c 0,-91.7957  0,-183.591  0,-275.387"
-             style="stop-color:#d4ff2a;stop-opacity:1"
-             id="stop6414" />
-        </meshPatch>
-      </meshRow>
-    </meshGradient>
     <meshGradient
        inkscape:collect="always"
        xlink:href="#linearGradient5732"
@@ -251,26 +167,6 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <ellipse
-     ry="128.25111"
-     rx="133.93124"
-     cy="153.96109"
-     cx="441.85355"
-     id="ellipse5941"
-     style="fill:#80ffb3;fill-opacity:1;stroke:none;stroke-width:5.30000019;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-  <rect
-     style="fill:url(#meshGradient5889);fill-opacity:1"
-     id="rect11482"
-     width="200"
-     height="200"
-     x="300.00003"
-     y="99.999985" />
-  <path
-     style="fill:url(#meshGradient6354);fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
-     d="m 184.75338,93.87142 c 0,0 60.98653,-46.636772 132.1375,40.6577 71.15097,87.29447 -106.42751,20.92675 -92.67564,77.13004 13.75187,56.20328 -126.158439,143.49776 -126.158439,143.49776 z"
-     id="path5996"
-     inkscape:connector-curvature="0"
-     sodipodi:nodetypes="csscc" />
   <rect
      style="fill:url(#meshGradient7143);fill-opacity:1;stroke:none;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="rect3230"

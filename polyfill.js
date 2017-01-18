@@ -19,9 +19,12 @@ function color_css2rgb(css) {
   ];
 }
 
-function stopsToCoons(stops) {
+function stopsToCoons(stops, preamble) {
   var cursor = [0,0];
-  var coons = [];
+  if(preamble.length > 0) {
+    cursor = preamble[preamble.length-1].slice();
+  }
+  var coons = preamble;
   coons.push(cursor.slice(0));
   var colors = [];
 
@@ -58,12 +61,16 @@ function stopsToCoons(stops) {
       var rgba = color_css2rgb(stopColor);
       rgba[3] = Math.round(255 * stopOpacity);
       colors.push(rgba);
+    } else {
+      colors.push([0,0,0,255]); // TODO
     }
   }
 
-  if(stops.length === 4) {
-    coons.pop(); // The first point gets added twice, because it's a closed loop
-  }
+  var first = coons[0];
+  var last = coons[coons.length-1];
+  // console.assert(first[0] === last[0] && first[1] === last[1]);
+
+  coons.pop(); // The first point gets added twice, because it's a closed loop
 
   return {coons:coons,colors:colors};
 }
@@ -251,7 +258,6 @@ function removeFill(node) {
 function replaceElements(mgmap) {
   var keys = Object.keys(mgmap);
   searchForMeshGrads(svg, function (elem, mgid) {
-    console.log('replacing for', elem.getAttribute('id'), mgid);
     if(keys.indexOf(mgid) >= 0) {
       var mgdata = mgmap[mgid];
       var img = meshGradToImg(mgdata.patchData, mgdata.x, mgdata.y, elem);
@@ -280,16 +286,20 @@ function run() {
       for(var k=0; k<patches.length; k++) {
         var patch = patches[k];
         var stops = patch.querySelectorAll('stop');
-        // if(j === 0 && k === 0) {
-        //   console.assert(stops.length === 4);
-        // } else if(j === 0 && k !== 0) {
-        //   console.assert(stops.length === 3);
-        // } else if(j !== 0 && k === 0) {
-        //   console.assert(stops.length === 3);
-        // } else if(j !== 0 && k !== 0) {
-        //   console.assert(stops.length === 2);
-        // }
-        data = stopsToCoons(stops);
+        var preamble;
+        if(j === 0 && k === 0) {
+          preamble = [];
+        } else if(j === 0 && k !== 0) {
+          preamble = patchData[j][k-1].coons.slice(3,7).reverse();
+        } else if(j !== 0 && k === 0) {
+          preamble = patchData[j-1][k].coons.slice(6,10).reverse();
+        } else if(j !== 0 && k !== 0) {
+          var preambleLeft = patchData[j][k-1].coons.slice(3,7).reverse();
+          var preambleTop = patchData[j-1][k].coons.slice(6,10).reverse();
+          preamble = preambleLeft.concat(preambleTop);
+        }
+        console.log('preamble',j,k,preamble.join(' '));
+        data = stopsToCoons(stops, preamble);
         patchData[j][k] = data;
       }
     }
