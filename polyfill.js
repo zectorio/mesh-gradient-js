@@ -66,6 +66,10 @@ function stopsToCoons(stops, preamble) {
     }
   }
 
+  for(i=colors.length; i<4; i++) {
+    colors.push([0,0,0,255]); // TODO
+  }
+
   var first = coons[0];
   var last = coons[coons.length-1];
   // console.assert(first[0] === last[0] && first[1] === last[1]);
@@ -179,14 +183,17 @@ function meshGradToImg(patchData, mgx, mgy, elem) {
     var row = patchData[i];
     for(var j=0; j<row.length; j++) {
       var data = row[j];
+      if(data.colors.length !== 4) {
+        console.error('data.colors', data.colors);
+      }
       if(i === 0 && j === 0) {
-        draw_bezier_patch(
-          imgdata.data, width,height,
-          interpolateCoons(data.coons), data.colors);
       } else if(i !== 0 && j === 0) {
       } else if(i === 0 && j !== 0) {
       } else if(i !== 0 && j !== 0) {
       }
+      draw_bezier_patch(
+        imgdata.data, width,height,
+        interpolateCoons(data.coons), data.colors);
     }
   }
 
