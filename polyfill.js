@@ -22,7 +22,7 @@ function color_css2rgb(css) {
 function stopsToCoons(stops, preamble) {
   var cursor = [0,0];
   if(preamble.length > 0) {
-    cursor = preamble[preamble.length-1].slice();
+    cursor = preamble.pop().slice();
   }
   var coons = preamble;
   coons.push(cursor.slice(0));
@@ -294,12 +294,14 @@ function run() {
         } else if(j !== 0 && k === 0) {
           preamble = patchData[j-1][k].coons.slice(6,10).reverse();
         } else if(j !== 0 && k !== 0) {
-          var preambleLeft = patchData[j][k-1].coons.slice(3,7).reverse();
-          var preambleTop = patchData[j-1][k].coons.slice(6,10).reverse();
+          var left = patchData[j][k-1].coons;
+          var top = patchData[j-1][k].coons;
+          var preambleLeft = left.slice(4,7).reverse();
+          var preambleTop = top.slice(0,1).concat(top.slice(9,13).reverse());
           preamble = preambleLeft.concat(preambleTop);
         }
-        console.log('preamble',j,k,preamble.join(' '));
         data = stopsToCoons(stops, preamble);
+        console.log(j,k,data.coons.join('|'));
         patchData[j][k] = data;
       }
     }
