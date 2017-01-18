@@ -81,7 +81,7 @@ function getMeshGradientAABB(patchData) {
   return {xmin:xmin, ymin:ymin, xmax:xmax, ymax:ymax};
 }
 
-function setClip(ctx, pathdata) {
+function setClip(ctx, pathdata, offset) {
   ctx.beginPath();
   var to, cp1, cp2;
   var cursor = [0,0];
@@ -100,6 +100,8 @@ function setClip(ctx, pathdata) {
         to = parts[i++].split(',');
         cursor[0] += parseFloat(to[0]);
         cursor[1] += parseFloat(to[1]);
+        cursor[0] -= offset[0];
+        cursor[1] -= offset[1];
         ctx.moveTo(cursor[0], cursor[1]);
         break;
       case 'c':
@@ -172,7 +174,7 @@ function meshGradToImg(patchData, mgx, mgy, elem) {
   target.height = height;
   var tctx = target.getContext('2d');
   if(elem.tagName === 'path') {
-    setClip(tctx, elem.getAttribute('d'));
+    setClip(tctx, elem.getAttribute('d'), [parseInt(mgx), parseInt(mgy)]);
     tctx.drawImage(canvas, 0,0, width, height);
   } else if(elem.tagName === 'ellipse') {
     target = canvas;
