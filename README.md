@@ -12,9 +12,9 @@ containing such mesh gradients cannot be rendered in browsers, because they
 only abide by the standard spec.
 
 However since SVG file format supports Javascript execution, we can alleviate
-this problem by means of polyfill.
+this problem by means of polyfill (as suggested [here](http://tavmjong.free.fr/svg2_status.html)).
 
-In this project I ported Cairo's algorithm for rendering mesh gradients into
+In this project I ported Cairo's algorithm for rendering mesh gradients to
 Javascript.
 
 Once having done that, I could use it to dynamically render mesh gradients when
@@ -24,12 +24,15 @@ mesh gradients on canvas, packs the renders into an image element and adds them
 behind the original element (original element is made transparent by setting
 its fill to `none`).
 
+Check out the [samples](https://github.com/zectorio/mesh-gradient-js/tree/master/samples)
+directory for example SVGs with mesh gradients and polyfill.
+
 How to use?
 ============
 
     git clone https://github.com/zectorio/mesh-gradient-js.git
     cd mesh-gradient-js
-    npm addpolyfill <SVG-filename>
+    npm run addpolyfill <SVG-filename>
 
 
 Development
@@ -37,11 +40,16 @@ Development
 
 If you make changes to the source and want to test it
 
-    npm addpolyfill <SVG-filename> dev
+    npm run addpolyfill <SVG-filename> dev
 
 If you want to build minified polyfill
 
     npm install
-    npm build
-    npm addpolyfill <SVG-filename>
+    npm run build
+    npm run addpolyfill <SVG-filename>
+
+References
+==========
+
+* [http://tavmjong.free.fr/SVG/MESH/Mesh.html](http://tavmjong.free.fr/SVG/MESH/Mesh.html)
 
