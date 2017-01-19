@@ -8,14 +8,24 @@ if(process.argv.length < 3) {
 }
 
 var insvg = process.argv[2];
+var isDev = process.argv[3] === 'dev';
+
+var javascript;
+if(isDev) {
+  console.info('Dev build');
+  javascript =
+    fs.readFileSync('mesh-gradient.js').toString()+'\n'+
+    fs.readFileSync('polyfill.js').toString()+'\n';
+} else {
+  console.info('Prod build');
+  javascript = fs.readFileSync('build/polyfill.min.js').toString();
+}
 
 var polyfill =
-  '<script type="application/ecmascript"> <![CDATA['+
-  fs.readFileSync('mesh-gradient.js').toString()+'\n'+
-  fs.readFileSync('polyfill.js').toString()+'\n'+
-  ']]> </script>';
+  '<script type="application/ecmascript"> <![CDATA['+javascript+']]> </script>';
 
-var outname = process.argv[3] ? process.argv[3] : 'out.svg';
+var outname = 'out.svg';
+console.info('Output SVG file:', outname);
 
 var rl = readline.createInterface({
   input : fs.createReadStream(insvg)

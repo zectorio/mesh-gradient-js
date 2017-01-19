@@ -17,6 +17,8 @@
     "url": "https://github.com/zectorio/mesh-gradient-js/issues"
   },
   "homepage": "https://github.com/zectorio/mesh-gradient-js#readme",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "uglifyjs": "^2.4.10"
   }
 }
