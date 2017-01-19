@@ -2,7 +2,7 @@
   "name": "mesh-gradient-js",
   "version": "0.1.0",
   "description": "Javascript implementation of Mesh Gradient rendering",
-  "main": "draw.js",
+  "main": "index.js",
   "scripts": {
     "build" : "uglifyjs index.js polyfill.js -o build/polyfill.min.js",
     "addpolyfill": "node add-polyfill-to-svg.js"
