@@ -14,8 +14,8 @@ var javascript;
 if(isDev) {
   console.info('Dev build');
   javascript =
-    fs.readFileSync('index.js').toString()+'\n'+
-    fs.readFileSync('polyfill.js').toString()+'\n';
+    fs.readFileSync('src/index.js').toString()+'\n'+
+    fs.readFileSync('src/polyfill.js').toString()+'\n';
 } else {
   console.info('Prod build');
   javascript = fs.readFileSync('build/polyfill.min.js').toString();

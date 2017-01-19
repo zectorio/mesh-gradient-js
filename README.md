@@ -24,3 +24,24 @@ mesh gradients on canvas, packs the renders into an image element and adds them
 behind the original element (original element is made transparent by setting
 its fill to `none`).
 
+How to use?
+============
+
+    git clone https://github.com/zectorio/mesh-gradient-js.git
+    cd mesh-gradient-js
+    npm addpolyfill <SVG-filename>
+
+
+Development
+===========
+
+If you make changes to the source and want to test it
+
+    npm addpolyfill <SVG-filename> dev
+
+If you want to build minified polyfill
+
+    npm install
+    npm build
+    npm addpolyfill <SVG-filename>
+
