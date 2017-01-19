@@ -14,7 +14,7 @@ var javascript;
 if(isDev) {
   console.info('Dev build');
   javascript =
-    fs.readFileSync('mesh-gradient.js').toString()+'\n'+
+    fs.readFileSync('index.js').toString()+'\n'+
     fs.readFileSync('polyfill.js').toString()+'\n';
 } else {
   console.info('Prod build');
