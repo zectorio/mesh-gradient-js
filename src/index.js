@@ -948,7 +948,7 @@
   if(typeof window !== "undefined") {
     window.drawMeshGradientPatch = drawMeshGradientPatch;
   } else if(typeof module !== "undefined") {
-    module.exports = drawMeshGradientPatch;
+    module.exports = {drawMeshGradientPatch:drawMeshGradientPatch};
   }
 
 })();
