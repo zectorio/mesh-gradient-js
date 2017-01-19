@@ -25,7 +25,11 @@ behind the original element (original element is made transparent by setting
 its fill to `none`).
 
 Check out the [samples](https://github.com/zectorio/mesh-gradient-js/tree/master/samples)
-directory for example SVGs with mesh gradients and polyfill.
+directory for example SVGs with mesh gradients and polyfill. **Note that if you
+open the *-with-polyfill.svg files in github, you won't see the mesh gradients
+rendered, because for security reasons Github won't execute embedded javascript
+polyfill in that file. Download those files and open them in your browser from
+disk to see the correct result**
 
 How to use?
 ============
