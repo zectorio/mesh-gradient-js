@@ -72,7 +72,9 @@ function parseStops(stops, preamble, colorPreamble) {
   // Assert that and pop it out
   var first = coons[0];
   var last = coons[coons.length-1];
-  console.assert(first[0] - last[0] < 0.001 && first[1] - last[1] < 0.001);
+  if(first[0] - last[0] > 1 || first[1] - last[1] > 1) {
+    console.error('Unexpected coons', coons.join('|'), '['+coons.length+']');
+  }
   coons.pop();
 
   return {coons:coons,colors:colors};
@@ -192,7 +194,7 @@ function meshGradToImg(patchData, mgx, mgy, elem) {
       }
       drawMeshGradientPatch(
         imgdata.data, width,height,
-        interpolateCoons(data.coons), data.colors);
+        data.coons, data.colors);
     }
   }
 
