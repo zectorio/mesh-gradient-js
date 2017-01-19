@@ -1,5 +1,6 @@
 
 var svg = document.querySelector('svg');
+var defs = document.querySelector('defs');
 
 function color_css2rgb(css) {
   css = css.toLowerCase();
@@ -167,7 +168,7 @@ function setClip(ctx, pathdata, offset) {
   ctx.clip();
 }
 
-function meshGradToImg(patchData, mgx, mgy, elem) {
+function replaceMeshGradsByPattern(patchData, mgx, mgy, mgid) {
 
   var aabb = getMeshGradientAABB(patchData);
   var width = aabb.xmax-aabb.xmin;
@@ -200,83 +201,31 @@ function meshGradToImg(patchData, mgx, mgy, elem) {
 
   ctx.putImageData(imgdata, 0,0);
 
-  // Set clip
-  var target = document.createElementNS('http://www.w3.org/1999/xhtml','canvas');
-  target.width = width;
-  target.height = height;
-  var tctx = target.getContext('2d');
-  if(elem.tagName === 'path') {
-    setClip(tctx, elem.getAttribute('d'), [parseInt(mgx), parseInt(mgy)]);
-    tctx.drawImage(canvas, 0,0, width, height);
-  } else if(elem.tagName === 'ellipse') {
-    target = canvas;
-    console.warn('todo');
-  } else {
-    target = canvas;
-    console.warn('todo', elem.tagName);
-  }
-
-
   // convert canvas to image element
   var img = document.createElementNS('http://www.w3.org/2000/svg','image');
-  img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', target.toDataURL());
-  img.setAttribute('x', mgx);
-  img.setAttribute('y', mgy);
+  img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', canvas.toDataURL());
+  img.setAttribute('x', '0');
+  img.setAttribute('y', '0');
   img.setAttribute('width',''+width);
   img.setAttribute('height',''+height);
-  return img;
-}
 
-function searchForMeshGrads(node, callback) {
+  // remove the meshGradient entry from defs
+  var existingMG = defs.querySelector('meshGradient#'+mgid);
+  defs.removeChild(existingMG);
 
-  var style = node.getAttribute('style');
-  if(style) {
-    var pairs = style.split(';');
-    for(var j=0; j<pairs.length; j++) {
-      var pair = pairs[j];
-      var value = pair.split(':')[1];
-      var result = /url\(#(meshGradient\d+)\)/.exec(value);
-      if(result && result.length > 1) {
-        callback(node, result[1]);
-      }
-    }
-  }
-
-  for(var i=0; i<node.children.length; i++) {
-    var child = node.children[i];
-    searchForMeshGrads(child, callback);
-  }
-}
-
-function removeFill(node) {
-  var style = node.getAttribute('style');
-  var pairs = style.split(';');
-  var newpairs = [];
-  for(var j=0; j<pairs.length; j++) {
-    var pair = pairs[j];
-    if(!pair.startsWith('fill')) {
-      newpairs.push(pair);
-    }
-  }
-  newpairs.push('fill:none');
-  node.setAttribute('style', newpairs.join(';'));
-}
-
-
-function replaceElements(mgmap) {
-  var keys = Object.keys(mgmap);
-  searchForMeshGrads(svg, function (elem, mgid) {
-    if(keys.indexOf(mgid) >= 0) {
-      var mgdata = mgmap[mgid];
-      var img = meshGradToImg(mgdata.patchData, mgdata.x, mgdata.y, elem);
-      svg.insertBefore(img, elem);
-      removeFill(elem);
-    }
-  });
+  // add pattern entry to defs, that contains canvas render as image component
+  var pattern = document.createElementNS('http://www.w3.org/2000/svg','pattern');
+  pattern.setAttribute('width', ''+width);
+  pattern.setAttribute('height',''+height);
+  pattern.setAttribute('x', ''+mgx);
+  pattern.setAttribute('y',''+mgy);
+  pattern.setAttribute('id', mgid);
+  pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+  pattern.appendChild(img);
+  defs.appendChild(pattern);
 }
 
 function run() {
-  var meshGradMap = {};
   var meshGradients = document.querySelectorAll('meshGradient');
   var data;
   for(var i=0; i<meshGradients.length; i++) {
@@ -325,10 +274,9 @@ function run() {
         patchData[j][k] = data;
       }
     }
-    meshGradMap[mgid] = {patchData:patchData, x:mgx,y:mgy};
+    replaceMeshGradsByPattern(patchData, mgx, mgy, mgid);
   }
 
-  replaceElements(meshGradMap);
 }
 
 run();
