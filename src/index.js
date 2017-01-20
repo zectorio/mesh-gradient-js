@@ -444,6 +444,7 @@
   }
 
   var NPIXELS = 0;
+  var OUTSIDEPIXELS = 0;
 
   /*
    * Set the color of a pixel.
@@ -483,7 +484,7 @@
 
       NPIXELS++;
     } else {
-      console.warn('Ignoring out-of-bounds coord', coord);
+      OUTSIDEPIXELS++;
     }
   }
 
@@ -935,6 +936,8 @@
    */
   function drawMeshGradientPatch(imgdata, width, height, coons, colors)
   {
+    NPIXELS = 0;
+    OUTSIDEPIXELS = 0;
     var reorderedColors = [
       colors[0],
       colors[3],
@@ -943,6 +946,10 @@
     ];
     var cpoints = interpolateCoons(coons);
     draw_bezier_patch(imgdata, width, height, cpoints, reorderedColors);
+
+    if(OUTSIDEPIXELS > 0) {
+      console.warn(OUTSIDEPIXELS+' pixels drawn outside');
+    }
   }
 
   if(typeof window !== "undefined") {
