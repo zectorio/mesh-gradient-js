@@ -116,22 +116,22 @@ function replaceMeshGradsByPattern(patchData, mgx, mgy, mgid) {
   var ctx = canvas.getContext('2d');
   var imgdata = ctx.getImageData(0,0,width,height);
 
+  var offset = [aabb.xmin, aabb.ymin];
+
   // Render mesh gradient
   for(var i=0; i<patchData.length; i++) {
     var row = patchData[i];
     for(var j=0; j<row.length; j++) {
       var data = row[j];
       if(data.colors.length !== 4) {
-        console.error('data.colors', data.colors);
+        console.error('data.colors unexpected length', data.colors);
       }
-      if(i === 0 && j === 0) {
-      } else if(i !== 0 && j === 0) {
-      } else if(i === 0 && j !== 0) {
-      } else if(i !== 0 && j !== 0) {
+      var coons = [];
+      for(var k=0; k<data.coons.length; k++) {
+        coons.push([data.coons[k][0]-offset[0], data.coons[k][1]-offset[1]]);
       }
       drawMeshGradientPatch(
-        imgdata.data, width,height,
-        data.coons, data.colors);
+        imgdata.data, width,height, coons, data.colors);
     }
   }
 
@@ -153,8 +153,8 @@ function replaceMeshGradsByPattern(patchData, mgx, mgy, mgid) {
   var pattern = document.createElementNS('http://www.w3.org/2000/svg','pattern');
   pattern.setAttribute('width', ''+width);
   pattern.setAttribute('height',''+height);
-  pattern.setAttribute('x', ''+mgx);
-  pattern.setAttribute('y',''+mgy);
+  pattern.setAttribute('x', ''+(parseInt(mgx)+offset[0]));
+  pattern.setAttribute('y',''+(parseInt(mgy)+offset[1]));
   pattern.setAttribute('id', mgid);
   pattern.setAttribute('patternUnits', 'userSpaceOnUse');
   pattern.appendChild(img);

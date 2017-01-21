@@ -10,9 +10,9 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   height="297mm"
-   width="210mm"
-   viewBox="0 0 744.09448819 1052.3622047"
+   height="500"
+   width="500"
+   viewBox="0 0 500 500"
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
@@ -21,60 +21,111 @@
      id="defs8">
     <linearGradient
        inkscape:collect="always"
-       id="linearGradient3197">
+       id="linearGradient8783">
       <stop
-         style="stop-color:#008080;stop-opacity:1;"
+         style="stop-color:#c8beb7;stop-opacity:1;"
          offset="0"
-         id="stop3199" />
+         id="stop8785" />
       <stop
-         style="stop-color:#008080;stop-opacity:0;"
+         style="stop-color:#c8beb7;stop-opacity:0;"
          offset="1"
-         id="stop3201" />
+         id="stop8787" />
     </linearGradient>
     <meshGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient3197"
-       id="meshGradient4283"
-       x="277.01389"
-       y="306.38214"
+       xlink:href="#linearGradient8783"
+       id="meshGradient10787"
+       x="179.28932"
+       y="108.57864"
        gradientUnits="userSpaceOnUse">
       <meshRow
-         id="meshRow4637">
+         id="meshRow11673">
         <meshPatch
-           id="meshPatch4639">
+           id="meshPatch11675">
           <stop
-             path="c 82.0103,-114.876  214.975,-114.876  296.986,0"
-             style="stop-color:#0000ff;stop-opacity:1"
-             id="stop4641" />
-          <stop
-             path="c 41.0052,57.4379  61.5077,132.72  61.5077,208.001"
+             path="c 19.5262,-39.0524  45.1184,-58.5786  70.7107,-58.5786"
              style="stop-color:#ff0000;stop-opacity:1"
-             id="stop4643" />
+             id="stop11677" />
           <stop
-             path="c -116.723,190.338  -300.132,-202.922  -420.001,0"
+             path="c 0,39.0524  2.84217e-14,83.4969  2.84217e-14,129.739"
              style="stop-color:#c8beb7;stop-opacity:1"
-             id="stop4645" />
+             id="stop11679" />
           <stop
-             path="c 0,-75.2816  20.5026,-150.563  61.5073,-208.001"
+             path="c -45.696,100.109  -68.5411,6.50874  -96.7456,19.5262"
              style="stop-color:#c8beb7;stop-opacity:1"
-             id="stop4647" />
+             id="stop11681" />
+          <stop
+             path="c 4.33916,-33.2243  13.0175,-64.6513  26.0349,-90.6866"
+             style="stop-color:#ff6600;stop-opacity:1"
+             id="stop11683" />
+        </meshPatch>
+        <meshPatch
+           id="meshPatch11685">
+          <stop
+             path="c 25.5922,0  51.1845,19.5262  70.7107,58.5786"
+             id="stop11687" />
+          <stop
+             path="c 13.0175,26.035  21.6958,57.4619  26.035,90.6862"
+             style="stop-color:#ff0000;stop-opacity:1"
+             id="stop11689" />
+          <stop
+             path="c -28.2045,-13.0175  -60.2988,-72.301  -96.7457,-19.5258"
+             style="stop-color:#c8beb7;stop-opacity:1"
+             id="stop11691" />
         </meshPatch>
       </meshRow>
       <meshRow
-         id="meshRow4649">
+         id="meshRow11693">
         <meshPatch
-           id="meshPatch4651">
+           id="meshPatch11695">
           <stop
-             path="c 0,75.2816  -20.5026,150.563  -61.5077,208.001"
-             id="stop4653" />
+             path="c 0,46.2418  -2.84217e-14,94.2809  -2.84217e-14,140.523"
+             id="stop11697" />
           <stop
-             path="c -82.0103,114.876  -214.975,114.876  -296.986,0"
-             style="stop-color:#554400;stop-opacity:1"
-             id="stop4655" />
+             path="c -34.8146,58.7595  -68.5411,-6.50874  -96.7456,-19.5262"
+             style="stop-color:#c8beb7;stop-opacity:1"
+             id="stop11699" />
           <stop
-             path="c -41.0052,-57.4379  -61.5077,-132.72  -61.5073,-208.001"
-             style="stop-color:#ffff00;stop-opacity:1"
-             id="stop4657" />
+             path="c -4.33916,-33.2243  -4.33916,-68.246  2.84217e-14,-101.471"
+             style="stop-color:#c8beb7;stop-opacity:1"
+             id="stop11701" />
+        </meshPatch>
+        <meshPatch
+           id="meshPatch11703">
+          <stop
+             path="c 4.33916,33.2243  4.33916,68.246  0,101.47"
+             id="stop11705" />
+          <stop
+             path="c -28.2045,13.0175  -49.9615,-80.0385  -96.7457,19.5272"
+             style="stop-color:#d45500;stop-opacity:1"
+             id="stop11707" />
+        </meshPatch>
+      </meshRow>
+      <meshRow
+         id="meshRow11709">
+        <meshPatch
+           id="meshPatch11711">
+          <stop
+             path="c 0,46.2418  0,90.6862  0,129.739"
+             id="stop11713" />
+          <stop
+             path="c -25.5922,0  -51.1845,-19.5262  -70.7107,-58.5786"
+             style="stop-color:#008000;stop-opacity:1"
+             id="stop11715" />
+          <stop
+             path="c -13.0175,-26.035  -21.6958,-57.4619  -26.0349,-90.6866"
+             style="stop-color:#008000;stop-opacity:1"
+             id="stop11717" />
+        </meshPatch>
+        <meshPatch
+           id="meshPatch11719">
+          <stop
+             path="c -4.33916,33.2243  -13.0175,64.6513  -26.035,90.6862"
+             id="stop11721" />
+          <stop
+             path="c -19.5262,39.0524  -45.1184,58.5786  -70.7107,58.58"
+             style="stop-color:#008000;stop-opacity:1"
+             id="stop11723" />
         </meshPatch>
       </meshRow>
     </meshGradient>
@@ -92,10 +143,11 @@
      inkscape:window-height="480"
      id="namedview6"
      showgrid="false"
-     inkscape:zoom="0.63571268"
-     inkscape:cx="80.248755"
-     inkscape:cy="526.1811"
-     inkscape:current-layer="svg2" />
+     inkscape:zoom="1.838"
+     inkscape:cx="250"
+     inkscape:cy="250"
+     inkscape:current-layer="svg2"
+     units="px" />
   <metadata
      id="metadata4">
     <rdf:RDF>
@@ -109,10 +161,10 @@
     </rdf:RDF>
   </metadata>
   <ellipse
-     style="fill:url(#meshGradient4283);fill-opacity:1;stroke:none;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="path3195"
-     cx="425.50668"
-     cy="514.3833"
-     rx="210.00053"
-     ry="294.15805" />
+     style="fill:url(#meshGradient10787);fill-opacity:1;stroke:none;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path8781"
+     cx="250"
+     cy="250"
+     rx="100"
+     ry="200" />
 </svg>
