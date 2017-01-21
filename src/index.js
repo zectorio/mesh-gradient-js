@@ -952,10 +952,12 @@
     }
   }
 
-  if(typeof window !== "undefined") {
+  if(typeof module !== "undefined") {
+    module.exports = {
+      drawMeshGradientPatch:drawMeshGradientPatch
+    };
+  } else if(typeof window !== "undefined") {
     window.drawMeshGradientPatch = drawMeshGradientPatch;
-  } else if(typeof module !== "undefined") {
-    module.exports = {drawMeshGradientPatch:drawMeshGradientPatch};
   }
 
 })();
