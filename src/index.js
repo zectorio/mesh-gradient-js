@@ -902,30 +902,58 @@
    * A mesh gradient coons patch is defined by 4 cubic bezier curves.
    * Hence there are expected to be 12 points on its boundaries. This routine
    * computes the 4 inside control points for such coons patch
+   *
+   *             j ->
+   *      b00  b01  b02  b03
+   *
+   *    i b10            b13
+   *    |      b[i][j]
+   *    v b20            b23
+   *
+   *      b30  b31  b32  b33
+   *
+   *  b[i][j] =
+   *    (1-i/3) * b[0][j] + (i/3) * b[3][j] +
+   *    (1-j/3) * b[i][0] + (j/3) * b[i][3]
+   *    - b[0][0] * (1-j/3) * (1-i/3)
+   *    - b[3][0] * (j/3) * (1-i/3)
+   *    - b[0][3] * (1-j/3) * (i/3)
+   *    - b[3][3] * (j/3) * (i/3)
+   *
+   *  Ref: CAGD - Farid - 15.2
+   *
    */
   function interpolateCoons(coons) {
     if(coons.length !== 12) {
-      console.error("Coons boundary of unexpected length", coons.length);
+      console.error("Coons boundary of unexpected length ", coons.length);
     }
-    var patch = [
+    var b = [
       [ coons[0], coons[1], coons[2], coons[3] ],
-      [ coons[11], null, null, coons[4] ],
-      [ coons[10], null, null, coons[5] ],
+      [ coons[11], [0,0], [0,0], coons[4] ],
+      [ coons[10], [0,0], [0,0], coons[5] ],
       [ coons[9], coons[8], coons[7], coons[6] ]
     ];
-    // TODO : following is very simplistic and incorrect interpolation
-    var pa, pb;
 
-    pa = coons[1];
-    pb = coons[8];
-    patch[1][1] = [ pa[0] + (1/3)*(pb[0]-pa[0]), pa[1] + (1/3)*(pb[1]-pa[1]) ];
-    patch[2][1] = [ pa[0] + (2/3)*(pb[0]-pa[0]), pa[1] + (2/3)*(pb[1]-pa[1]) ];
+    for(var i=1; i<=2; i++) {
+      for(var j=1; j<=2; j++) {
+        b[i][j][0] =
+          (1-i/3) * b[0][j][0] + (i/3) * b[3][j][0] +
+          (1-j/3) * b[i][0][0] + (j/3) * b[i][3][0]
+          - b[0][0][0] * (1-j/3) * (1-i/3)
+          - b[3][0][0] * (j/3) * (1-i/3)
+          - b[0][3][0] * (1-j/3) * (i/3)
+          - b[3][3][0] * (j/3) * (i/3);
 
-    pa = coons[2];
-    pb = coons[7];
-    patch[1][2] = [ pa[0] + (1/3)*(pb[0]-pa[0]), pa[1] + (1/3)*(pb[1]-pa[1]) ];
-    patch[2][2] = [ pa[0] + (2/3)*(pb[0]-pa[0]), pa[1] + (2/3)*(pb[1]-pa[1]) ];
-    return patch;
+        b[i][j][1] =
+          (1-i/3) * b[0][j][1] + (i/3) * b[3][j][1] +
+          (1-j/3) * b[i][0][1] + (j/3) * b[i][3][1]
+          - b[0][0][1] * (1-j/3) * (1-i/3)
+          - b[3][0][1] * (j/3) * (1-i/3)
+          - b[0][3][1] * (1-j/3) * (i/3)
+          - b[3][3][1] * (j/3) * (i/3);
+      }
+    }
+    return b;
   }
 
   /*
