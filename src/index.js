@@ -445,6 +445,10 @@
 
   var NPIXELS = 0;
   var OUTSIDEPIXELS = 0;
+  var NEGXPIXELS = 0;
+  var NEGYPIXELS = 0;
+  var POSXPIXELS = 0;
+  var POSYPIXELS = 0;
 
   /*
    * Set the color of a pixel.
@@ -484,6 +488,10 @@
 
       NPIXELS++;
     } else {
+      if(x < 0) { NEGXPIXELS++; }
+      if(y < 0) { NEGYPIXELS++; }
+      if(x > width) { POSXPIXELS++; }
+      if(y > height) { POSYPIXELS++; }
       OUTSIDEPIXELS++;
     }
   }
@@ -966,6 +974,11 @@
   {
     NPIXELS = 0;
     OUTSIDEPIXELS = 0;
+    NEGXPIXELS = 0;
+    NEGYPIXELS = 0;
+    POSXPIXELS = 0;
+    POSYPIXELS = 0;
+
     var reorderedColors = [
       colors[0],
       colors[3],
@@ -976,7 +989,8 @@
     draw_bezier_patch(imgdata, width, height, cpoints, reorderedColors);
 
     if(OUTSIDEPIXELS > 0) {
-      console.warn(OUTSIDEPIXELS+' pixels drawn outside');
+      console.warn('-x '+NEGXPIXELS+' -y '+NEGYPIXELS+
+        ' +x '+POSXPIXELS+' +y '+POSYPIXELS+' total:'+OUTSIDEPIXELS);
     }
   }
 
