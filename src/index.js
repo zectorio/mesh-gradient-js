@@ -1001,5 +1001,7 @@
   } else if(typeof window !== "undefined") {
     window.drawMeshGradientPatch = drawMeshGradientPatch;
   }
+  window.draw_bezier_patch = draw_bezier_patch;
+  window.interpolateCoons = interpolateCoons;
 
 })();

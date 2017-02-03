@@ -58,7 +58,7 @@ var data = {
   }
 };
 
-activeSample = data.twisted1coons;
+activeSample = data.twisted1;
 
 window.onload = function () {
 
@@ -80,12 +80,17 @@ window.onload = function () {
 var activeSample;
 
 function drawPatch() {
+  var t0 = new Date();
   if(activeSample.patch) {
+    console.log('grid');
     draw_bezier_patch(imgdata.data, W, H, activeSample.patch, activeSample.colors);
   } else if(activeSample.coons) {
+    console.log('coons');
     var patch = interpolateCoons(activeSample.coons);
     draw_bezier_patch(imgdata.data, W, H, patch, activeSample.colors);
   }
+  var t1 = new Date();
+  console.log(t1-t0,'msec');
 }
 
 function drawCanvas() {
@@ -95,15 +100,12 @@ function drawCanvas() {
   ctx.fillStyle = '#fff';
   ctx.fillRect(0,0,W,H);
 
-  var t0 = new Date();
   imgdata = ctx.getImageData(0,0,W,H);
 
   drawPatch();
 
   ctx.putImageData(imgdata, 0,0);
 
-  var t1 = new Date();
-  // console.log((t1-t0)+' msec');
 }
 
 function redraw() {
